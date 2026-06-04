@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpsTwin AI | Investigation History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .photonic-glow {
+            box-shadow: 0 0 25px 0 rgba(6, 182, 212, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #17130f;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3d494c;
+            border-radius: 2px;
+        }
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #4cd7f6;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#21b7c7",
+                      "on-tertiary-container": "#00434a",
+                      "secondary": "#5de6ff",
+                      "surface-bright": "#3d3833",
+                      "on-surface-variant": "#bcc9cd",
+                      "tertiary": "#54d8e8",
+                      "background": "#17130f",
+                      "on-tertiary-fixed-variant": "#004f57",
+                      "on-secondary": "#00363e",
+                      "on-error": "#690005",
+                      "surface-variant": "#39342f",
+                      "surface-container-low": "#1f1b17",
+                      "outline": "#869397",
+                      "primary": "#4cd7f6",
+                      "error-container": "#93000a",
+                      "surface-tint": "#4cd7f6",
+                      "on-primary": "#003640",
+                      "primary-fixed": "#acedff",
+                      "surface-container-highest": "#39342f",
+                      "on-tertiary-fixed": "#001f23",
+                      "on-background": "#eae1da",
+                      "surface": "#17130f",
+                      "inverse-on-surface": "#34302b",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "on-secondary-container": "#00515d",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "surface-dim": "#17130f",
+                      "on-primary-fixed": "#001f26",
+                      "outline-variant": "#3d494c",
+                      "on-primary-fixed-variant": "#004e5c",
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "secondary-fixed": "#a2eeff",
+                      "primary-container": "#06b6d4",
+                      "surface-container": "#231f1b",
+                      "surface-container-high": "#2e2925",
+                      "secondary-container": "#00cbe6",
+                      "on-tertiary": "#00363c",
+                      "on-primary-container": "#00424f",
+                      "primary-fixed-dim": "#4cd7f6",
+                      "tertiary-fixed": "#91f1ff",
+                      "inverse-surface": "#eae1da",
+                      "inverse-primary": "#00687a",
+                      "on-secondary-fixed": "#001f25",
+                      "tertiary-fixed-dim": "#54d8e8",
+                      "surface-container-lowest": "#110e0a",
+                      "on-surface": "#eae1da"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "container-max": "1280px",
+                      "unit": "4px",
+                      "stack-sm": "8px",
+                      "section-gap": "80px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "hero-heading-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "code-sm": ["JetBrains Mono"],
+                      "body-md": ["Inter"],
+                      "label-caps": ["JetBrains Mono"],
+                      "headline-md": ["Inter"],
+                      "hero-heading": ["Inter"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "hero-heading-mobile": ["48px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "code-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "hero-heading": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30 selection:text-primary">
+<!-- Side Navigation Shell -->
+<aside class="w-64 h-full fixed left-0 top-0 bg-surface dark:bg-surface border-r border-outline-variant flex flex-col py-stack-md z-50">
+<div class="px-6 mb-stack-lg">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">OpsTwin AI</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant mt-1">Precision Operations</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="home">home</span>
+                Home
+            </a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="query_stats">query_stats</span>
+                Investigate
+            </a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="auto_awesome_motion">auto_awesome_motion</span>
+                Knowledge
+            </a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="monitoring">monitoring</span>
+                Analytics
+            </a>
+<a class="flex items-center px-6 py-3 text-primary font-bold border-r-2 border-primary hover:bg-surface-container-high transition-colors scale-[0.98]" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="history">history</span>
+                History
+            </a>
+<a class="flex items-center px-6 py-3 text-on-surface-variant font-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-primary-container text-on-primary-container font-label-caps py-3 rounded-lg flex items-center justify-center photonic-glow hover:bg-secondary-container transition-all active:scale-95">
+<span class="material-symbols-outlined mr-2" data-icon="add_circle">add_circle</span>
+                New Investigation
+            </button>
+<div class="mt-stack-lg p-3 bg-surface-container rounded flex items-center gap-3">
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A close-up, high-quality professional portrait of a tech-savvy software engineer with a neutral expression. The background is a dimly lit futuristic office space with hints of cyan and dark charcoal lighting. The overall mood is serious and professional, matching a high-end AI control center aesthetic with sharp focus and cinematic depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcjrpxgfmuVD9FOMorbEBQasox16T5l6qzti5XFZoAB18qZmHCIDHTmK5dxv-6Xm7OlvjLme1HCUaG6e6wiM7F4VuG8nBc_R7qSmN6K2ruEUkf4o80UcOce6wV2-PKKSQdzS87PzyJhf5b1XgAjEDFQJnfcLGQlVeiTsydBFBXRQ4pJNS1kYRtptQ0EhknuFoDSg23uwbYdY8nIoe92TlEE8S9GFr6ZkXjReOPbcz3qcinBOkiGYYDSZvj_rRWdZcIyOFB_PDoQQpM"/>
+<div class="overflow-hidden">
+<p class="font-body-md text-on-surface truncate">Alex Rivera</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Senior Operator</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Header & Main Content -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex justify-between items-center w-full px-gutter h-16 bg-surface dark:bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-background border border-outline-variant rounded py-1.5 pl-10 pr-4 font-code-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search investigation archives..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-gutter">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="help">help</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-gutter grid grid-cols-12 gap-gutter max-w-[1600px] mx-auto w-full mb-12">
+<!-- Filter Bar Section -->
+<div class="col-span-12 flex flex-col md:flex-row items-end gap-stack-md bg-surface-container p-4 border border-outline-variant rounded-xl">
+<div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-[12px] text-on-surface-variant">Service Node</label>
+<select class="bg-background border border-outline-variant text-on-surface font-body-md rounded py-2 px-3 focus:border-primary outline-none appearance-none">
+<option>All Services</option>
+<option>auth-api-v2</option>
+<option>payment-gateway</option>
+<option>cdn-edge-nodes</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-[12px] text-on-surface-variant">Status</label>
+<select class="bg-background border border-outline-variant text-on-surface font-body-md rounded py-2 px-3 focus:border-primary outline-none appearance-none">
+<option>All States</option>
+<option>Resolved</option>
+<option>Active</option>
+<option>Failed</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-[12px] text-on-surface-variant">Severity</label>
+<select class="bg-background border border-outline-variant text-on-surface font-body-md rounded py-2 px-3 focus:border-primary outline-none appearance-none">
+<option>All Levels</option>
+<option>Critical</option>
+<option>High</option>
+<option>Medium</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-[12px] text-on-surface-variant">Date Range</label>
+<button class="bg-background border border-outline-variant text-on-surface font-body-md rounded py-2 px-3 flex justify-between items-center hover:border-outline transition-colors">
+                            Last 30 Days
+                            <span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+</button>
+</div>
+</div>
+<button class="bg-surface-container-highest border border-outline-variant text-on-surface font-label-caps px-6 py-2.5 rounded hover:bg-outline-variant transition-colors flex items-center">
+<span class="material-symbols-outlined mr-2" data-icon="filter_list">filter_list</span>
+                    Apply Filters
+                </button>
+</div>
+<!-- Investigations Table -->
+<div class="col-span-12 lg:col-span-7 flex flex-col bg-surface border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface">Archive Explorer</h2>
+<span class="font-label-caps text-on-surface-variant text-[12px]">2,482 total records</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant text-left">
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Investigation ID</th>
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Service</th>
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Impact</th>
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Conf %</th>
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Status</th>
+<th class="p-4 font-label-caps text-[12px] text-on-surface-variant">Duration</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group bg-surface-container-low/50">
+<td class="p-4 font-code-sm text-primary">#INC-8812-X</td>
+<td class="p-4 font-body-md">auth-gateway</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-error-container/20 text-error border border-error/30 text-[11px] font-bold uppercase flex items-center w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-2 animate-pulse"></span>
+                                        Critical
+                                    </span>
+</td>
+<td class="p-4 font-code-sm">98.2%</td>
+<td class="p-4">
+<span class="text-tertiary flex items-center font-body-md text-sm">
+<span class="material-symbols-outlined mr-1 text-base" data-icon="check_circle">check_circle</span>
+                                        Resolved
+                                    </span>
+</td>
+<td class="p-4 text-on-surface-variant text-sm">12m 45s</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="p-4 font-code-sm text-primary">#INC-9004-A</td>
+<td class="p-4 font-body-md">db-sharding-01</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary border border-tertiary/30 text-[11px] font-bold uppercase flex items-center w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-2"></span>
+                                        Medium
+                                    </span>
+</td>
+<td class="p-4 font-code-sm">74.5%</td>
+<td class="p-4">
+<span class="text-on-surface-variant flex items-center font-body-md text-sm italic">
+<span class="material-symbols-outlined mr-1 text-base animate-spin" data-icon="sync">sync</span>
+                                        Active
+                                    </span>
+</td>
+<td class="p-4 text-on-surface-variant text-sm">03h 12m</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="p-4 font-code-sm text-primary">#INC-7721-P</td>
+<td class="p-4 font-body-md">payment-svc</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/10 text-secondary border border-secondary/30 text-[11px] font-bold uppercase flex items-center w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-2"></span>
+                                        High
+                                    </span>
+</td>
+<td class="p-4 font-code-sm">91.0%</td>
+<td class="p-4">
+<span class="text-tertiary flex items-center font-body-md text-sm">
+<span class="material-symbols-outlined mr-1 text-base" data-icon="check_circle">check_circle</span>
+                                        Resolved
+                                    </span>
+</td>
+<td class="p-4 text-on-surface-variant text-sm">24m 10s</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="p-4 font-code-sm text-primary">#INC-6650-L</td>
+<td class="p-4 font-body-md">search-indexer</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/10 text-tertiary border border-tertiary/30 text-[11px] font-bold uppercase flex items-center w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary mr-2"></span>
+                                        Low
+                                    </span>
+</td>
+<td class="p-4 font-code-sm">99.9%</td>
+<td class="p-4">
+<span class="text-tertiary flex items-center font-body-md text-sm">
+<span class="material-symbols-outlined mr-1 text-base" data-icon="check_circle">check_circle</span>
+                                        Resolved
+                                    </span>
+</td>
+<td class="p-4 text-on-surface-variant text-sm">05m 12s</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high transition-colors cursor-pointer group">
+<td class="p-4 font-code-sm text-primary">#INC-5512-B</td>
+<td class="p-4 font-body-md">api-ingress</td>
+<td class="p-4">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/10 text-secondary border border-secondary/30 text-[11px] font-bold uppercase flex items-center w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-2"></span>
+                                        High
+                                    </span>
+</td>
+<td class="p-4 font-code-sm">82.3%</td>
+<td class="p-4">
+<span class="text-tertiary flex items-center font-body-md text-sm">
+<span class="material-symbols-outlined mr-1 text-base" data-icon="check_circle">check_circle</span>
+                                        Resolved
+                                    </span>
+</td>
+<td class="p-4 text-on-surface-variant text-sm">45m 22s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center mt-auto">
+<button class="px-3 py-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-caps text-[12px]">Previous</button>
+<div class="flex gap-2">
+<span class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded font-code-sm">1</span>
+<span class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-highest rounded font-code-sm cursor-pointer">2</span>
+<span class="w-8 h-8 flex items-center justify-center hover:bg-surface-container-highest rounded font-code-sm cursor-pointer">3</span>
+</div>
+<button class="px-3 py-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-caps text-[12px]">Next</button>
+</div>
+</div>
+<!-- Detailed View (Mock) -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-gutter">
+<!-- Inspector Header -->
+<div class="bg-surface border border-outline-variant rounded-xl p-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-8xl" data-icon="terminal">terminal</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-caps text-secondary text-[12px] mb-1">SELECTED INVESTIGATION</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">#INC-8812-X</h3>
+</div>
+<span class="text-tertiary px-3 py-1 border border-tertiary/20 bg-tertiary/10 rounded-full font-label-caps text-[10px]">VERIFIED SOLUTION</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-background border border-outline-variant rounded">
+<p class="font-label-caps text-[10px] text-on-surface-variant">TIMELINE</p>
+<p class="text-on-surface font-code-sm mt-1">12 Oct 14:02:11</p>
+</div>
+<div class="p-3 bg-background border border-outline-variant rounded">
+<p class="font-label-caps text-[10px] text-on-surface-variant">PRIMARY AGENT</p>
+<p class="text-on-surface font-code-sm mt-1">OpsTwin-Historian-9</p>
+</div>
+</div>
+</div>
+<!-- Timeline / Log Tabs -->
+<div class="bg-surface border border-outline-variant rounded-xl flex-1 flex flex-col overflow-hidden">
+<div class="flex bg-surface-container border-b border-outline-variant">
+<button class="px-4 py-3 font-label-caps text-[12px] border-b-2 border-primary text-primary bg-background">Logs</button>
+<button class="px-4 py-3 font-label-caps text-[12px] text-on-surface-variant hover:text-on-surface transition-colors">Findings</button>
+<button class="px-4 py-3 font-label-caps text-[12px] text-on-surface-variant hover:text-on-surface transition-colors">Expert Reasoning</button>
+<button class="px-4 py-3 font-label-caps text-[12px] text-on-surface-variant hover:text-on-surface transition-colors">Resolution</button>
+</div>
+<div class="p-4 bg-background flex-1 font-code-sm text-[13px] text-on-surface-variant custom-scrollbar overflow-y-auto leading-relaxed">
+<div class="space-y-3">
+<div>
+<span class="text-primary">[14:02:11]</span> <span class="text-on-surface">SYS_EVENT:</span> 5xx Spike detected on auth-gateway. Threshold exceeded (22.5%).
+                            </div>
+<div>
+<span class="text-primary">[14:02:13]</span> <span class="text-secondary">AGENT_INIT:</span> OpsTwin-Historian initialized for deep-trace analysis.
+                            </div>
+<div>
+<span class="text-primary">[14:02:45]</span> <span class="text-secondary">SCANNING:</span> Scraping log metrics from Prometheus Node Exporter...
+                            </div>
+<div class="pl-4 border-l border-outline-variant py-2 bg-surface-container-low/30 my-2">
+<span class="text-tertiary">ANALYSIS:</span> Memory pressure identified in pod 'auth-v2-7f9b8'. Swapping detected. Latency increased to 450ms.
+                            </div>
+<div>
+<span class="text-primary">[14:03:12]</span> <span class="text-secondary">CORRELATION:</span> Deployment #D-9982 (13:58:00) identified as likely cause.
+                            </div>
+<div>
+<span class="text-primary">[14:04:01]</span> <span class="text-error">ERROR:</span> Auto-rollback failed. Manual intervention requested... Overridden by Expert-Agent-Alpha.
+                            </div>
+<div>
+<span class="text-primary">[14:04:22]</span> <span class="text-on-surface">RESOLUTION:</span> Rollback successful. Service health returning to nominal.
+                            </div>
+<div class="flex items-center gap-2">
+<span class="text-primary">[14:04:30]</span> <span class="terminal-cursor"></span>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-container-low flex justify-end gap-3">
+<button class="px-4 py-2 bg-surface-container-highest border border-outline-variant text-on-surface font-label-caps text-[11px] rounded hover:bg-outline-variant transition-colors">Download Artifacts</button>
+<button class="px-4 py-2 bg-primary text-on-primary font-label-caps text-[11px] rounded photonic-glow hover:bg-secondary transition-colors">Open Full Report</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-16rem)] flex justify-between items-center px-gutter py-2 text-label-caps bg-surface-container-lowest border-t border-outline-variant z-50">
+<div class="text-on-surface-variant">© 2024 OpsTwin AI • System Status: Operational</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-secondary transition-opacity" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-secondary transition-opacity" href="#">API Support</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple micro-interaction for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Visual feedback for selection
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('bg-primary/5'));
+                row.classList.add('bg-primary/5');
+                
+                // Simulated log update effect
+                const logContainer = document.querySelector('.custom-scrollbar');
+                logContainer.style.opacity = '0.5';
+                setTimeout(() => {
+                    logContainer.style.opacity = '1';
+                }, 150);
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('photonic-glow');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('photonic-glow');
+        });
+    </script>
+</body></html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Knowledge Graph | OpsTwin AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#21b7c7",
+                    "on-tertiary-container": "#00434a",
+                    "secondary": "#5de6ff",
+                    "surface-bright": "#3d3833",
+                    "on-surface-variant": "#bcc9cd",
+                    "tertiary": "#54d8e8",
+                    "background": "#17130f",
+                    "on-tertiary-fixed-variant": "#004f57",
+                    "on-secondary": "#00363e",
+                    "on-error": "#690005",
+                    "surface-variant": "#39342f",
+                    "surface-container-low": "#1f1b17",
+                    "outline": "#869397",
+                    "primary": "#4cd7f6",
+                    "error-container": "#93000a",
+                    "surface-tint": "#4cd7f6",
+                    "on-primary": "#003640",
+                    "primary-fixed": "#acedff",
+                    "surface-container-highest": "#39342f",
+                    "on-tertiary-fixed": "#001f23",
+                    "on-background": "#eae1da",
+                    "surface": "#17130f",
+                    "inverse-on-surface": "#34302b",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "on-secondary-container": "#00515d",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "surface-dim": "#17130f",
+                    "on-primary-fixed": "#001f26",
+                    "outline-variant": "#3d494c",
+                    "on-primary-fixed-variant": "#004e5c",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "secondary-fixed": "#a2eeff",
+                    "primary-container": "#06b6d4",
+                    "surface-container": "#231f1b",
+                    "surface-container-high": "#2e2925",
+                    "secondary-container": "#00cbe6",
+                    "on-tertiary": "#00363c",
+                    "on-primary-container": "#00424f",
+                    "primary-fixed-dim": "#4cd7f6",
+                    "tertiary-fixed": "#91f1ff",
+                    "inverse-surface": "#eae1da",
+                    "inverse-primary": "#00687a",
+                    "on-secondary-fixed": "#001f25",
+                    "tertiary-fixed-dim": "#54d8e8",
+                    "surface-container-lowest": "#110e0a",
+                    "on-surface": "#eae1da"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "unit": "4px",
+                    "stack-sm": "8px",
+                    "section-gap": "80px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "hero-heading-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "code-sm": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["JetBrains Mono"],
+                    "headline-md": ["Inter"],
+                    "hero-heading": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "hero-heading-mobile": ["48px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "code-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "hero-heading": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .photonic-glow {
+            box-shadow: 0 0 20px 2px rgba(6, 182, 212, 0.15);
+        }
+        .node-pulse {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; filter: blur(4px); }
+            50% { opacity: 0.8; filter: blur(8px); }
+        }
+        .canvas-bg {
+            background-image: radial-gradient(circle at 2px 2px, #2e2a24 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<!-- Main Content Grid -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-container-lowest border-r border-outline-variant/20 flex flex-col z-50">
+<div class="p-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">psychology</span>
+<span class="font-headline-md text-[20px] font-bold text-on-surface">OpsTwin AI</span>
+</div>
+<nav class="flex-grow px-4 py-6 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-body-md">Investigate</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary border-r-2 border-primary" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md font-bold">Knowledge</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-md">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant/10">
+<button class="w-full py-3 bg-primary/10 text-primary border border-primary/30 rounded mb-6 hover:bg-primary/20 transition-all font-bold text-sm">
+      NEW INVESTIGATION
+    </button>
+<div class="flex items-center gap-3 px-2">
+<div class="w-10 h-10 rounded-full border border-primary/30 overflow-hidden">
+<img alt="Alex Chen" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAOQvrf9bbiWyzaXJvbjHDdqt_y-90FpRtsosTIPR3HkRni80-NUCfbjG-YLbf-bCkRPG18YRRbs2R2UsqQVPTZJCEQRz1o9e51lYY42ira5Oru-cjF5xBzKibeJyoe1NjTBYz4zENiaoGGTIbmxz3Lo1IwYSH0pAQW3n074J8jrMGw1M6SWczfz_eY5uqUW21l0in2t_oYfs4iiNWgC8FcyIUxdcXyR5uW46bGTfPq7VANr_D56XZC3GPTCd3Ke8RRzUAsdLorsm8"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold text-on-surface truncate">Alex Chen</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter truncate">Infra Architect</p>
+</div>
+</div>
+</div>
+</aside><header class="fixed top-0 right-0 left-[240px] h-14 bg-background/80 backdrop-blur-md border-b border-outline-variant/20 z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-1.5 rounded-full border border-outline-variant/20 w-96">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface w-full" placeholder="Search system overmind..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+      AC
+    </div>
+</div>
+</header><main class="pb-12 px-margin-mobile md:px-margin max-w-container-max mx-auto min-h-screen ml-[240px] pt-20">
+<!-- Header Info -->
+<header class="mb-stack-lg">
+<div class="flex items-center gap-stack-sm mb-2">
+<span class="font-label-caps text-label-caps text-primary">System Overmind / Knowledge Management</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-background">Operational Twin Repository</h1>
+<p class="text-on-surface-variant mt-2 max-w-2xl">Digital Operational Twins represent encoded institutional knowledge from your most experienced engineers, ready to orchestrate automated incident resolution.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left: Expert Twin Cards (4 cols) -->
+<section class="lg:col-span-4 flex flex-col gap-stack-md">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant">Active Expert Twins</h2>
+<!-- Twin Card: Alex Chen -->
+<div class="group p-stack-md bg-surface-container border border-outline-variant hover:border-primary transition-all cursor-pointer relative overflow-hidden" onclick="openDetail('alex')">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-stack-md mb-stack-sm relative z-10">
+<div class="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center overflow-hidden bg-surface-container-high">
+<img alt="Alex Chen" class="w-full h-full object-cover" data-alt="A professional headshot of a senior software engineer of East Asian descent with a focused and intelligent expression. He is wearing a dark tech-style hoodie in a dimly lit studio with a soft cyan rim light highlighting his profile. The overall aesthetic is clean, modern, and technical, fitting a high-tech corporate AI dashboard environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAOQvrf9bbiWyzaXJvbjHDdqt_y-90FpRtsosTIPR3HkRni80-NUCfbjG-YLbf-bCkRPG18YRRbs2R2UsqQVPTZJCEQRz1o9e51lYY42ira5Oru-cjF5xBzKibeJyoe1NjTBYz4zENiaoGGTIbmxz3Lo1IwYSH0pAQW3n074J8jrMGw1M6SWczfz_eY5uqUW21l0in2t_oYfs4iiNWgC8FcyIUxdcXyR5uW46bGTfPq7VANr_D56XZC3GPTCd3Ke8RRzUAsdLorsm8"/>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Alex Chen</h3>
+<p class="text-code-sm font-code-sm text-primary">L8 Infrastructure Architect</p>
+</div>
+</div>
+<div class="space-y-unit relative z-10">
+<div class="flex justify-between text-code-sm text-on-surface-variant">
+<span>Model Confidence</span>
+<span class="text-primary">98.4%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-primary h-full photonic-glow" style="width: 98.4%"></div>
+</div>
+<div class="flex justify-between items-center mt-stack-sm">
+<span class="text-body-md text-on-surface">412 <span class="text-on-surface-variant text-body-sm">Incidents Solved</span></span>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Twin Card: Maria Garcia -->
+<div class="group p-stack-md bg-surface-container border border-outline-variant hover:border-tertiary transition-all cursor-pointer relative overflow-hidden" onclick="openDetail('maria')">
+<div class="flex items-center gap-stack-md mb-stack-sm">
+<div class="w-12 h-12 rounded-full border-2 border-tertiary flex items-center justify-center overflow-hidden bg-surface-container-high">
+<img alt="Maria Garcia" class="w-full h-full object-cover" data-alt="A professional portrait of a female senior DevOps engineer of Hispanic descent. She has a confident smile and wears a professional dark blazer. The lighting is warm and cinematic with subtle purple atmospheric highlights in the background. The style is high-end, clean, and representative of a technical leader within a futuristic AI platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_n1uarj0vhvFyaq8Zqx2j1SHt56G5Ng4im7HpkfADSd0rtXnt19AX5Hl6UJVWjtZ5o5pFy7dx0Kz2o72Vutv5ETZCjzmhmyqye-ElA-8_h3hhI9hGgQ0X0HokDwzq7c3CvKNT0Sspf0BRLOp1Tm5X8w6syb7Jkjb17LrHN4ofITF0ruTkLK6LCjxlGo6Dbr8Vf_vBn505jADay0h7B-1YxMStv9p6k9gbKxguLv1nfcoqTbyFTuJ5hxDvJLg982-11TJeeEbqibP6"/>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Maria Garcia</h3>
+<p class="text-code-sm font-code-sm text-tertiary">Cloud Security Lead</p>
+</div>
+</div>
+<div class="space-y-unit">
+<div class="flex justify-between text-code-sm text-on-surface-variant">
+<span>Model Confidence</span>
+<span class="text-tertiary">94.1%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-tertiary h-full" style="width: 94.1%"></div>
+</div>
+<p class="mt-stack-sm text-body-md text-on-surface">289 <span class="text-on-surface-variant text-body-sm">Incidents Solved</span></p>
+</div>
+</div>
+<!-- Twin Card: James Wilson -->
+<div class="group p-stack-md bg-surface-container border border-outline-variant hover:border-secondary transition-all cursor-pointer relative overflow-hidden" onclick="openDetail('james')">
+<div class="flex items-center gap-stack-md mb-stack-sm">
+<div class="w-12 h-12 rounded-full border-2 border-secondary flex items-center justify-center overflow-hidden bg-surface-container-high">
+<img alt="James Wilson" class="w-full h-full object-cover" data-alt="A portrait of a male senior backend engineer with a thoughtful and experienced demeanor. He is wearing glasses and a grey sweater. The environment is a modern workspace with soft, blurred amber background lights. The aesthetic is warm, intelligent, and highly professional, utilizing depth of field to emphasize the subject for a technical dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMeyltWxkgVhfabnvsreobF03QE5c3zZzsF_22AsjiFxnw1zBXQZJX8uykZHmnuW194Ho2lYLL5LZ_nM2abVKQtpGFIT0nNAVpk_1T30Nk18GpMjkrAAcFKc2H11DTFxfbjOCGHm6jFbKWFmZnPLgB8CAm9yOUVWa0mJC3ch6Mw1rvpumkTxJyAFPcPvGtdARKnCmzNzoseQoQQfdAL-iN5UPSHrewbFNTgU64TmlRe6_z0v7yT0Fbhys8wZVUZvpw_ZcTGF1yPpyd"/>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">James Wilson</h3>
+<p class="text-code-sm font-code-sm text-secondary">Data Reliability Expert</p>
+</div>
+</div>
+<div class="space-y-unit">
+<div class="flex justify-between text-code-sm text-on-surface-variant">
+<span>Model Confidence</span>
+<span class="text-secondary">89.8%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-secondary h-full" style="width: 89.8%"></div>
+</div>
+<p class="mt-stack-sm text-body-md text-on-surface">156 <span class="text-on-surface-variant text-body-sm">Incidents Solved</span></p>
+</div>
+</div>
+<!-- Twin Card: Priya Patel -->
+<div class="group p-stack-md bg-surface-container border border-outline-variant hover:border-on-tertiary-container transition-all cursor-pointer relative overflow-hidden" onclick="openDetail('priya')">
+<div class="flex items-center gap-stack-md mb-stack-sm">
+<div class="w-12 h-12 rounded-full border-2 border-on-tertiary-container flex items-center justify-center overflow-hidden bg-surface-container-high">
+<img alt="Priya Patel" class="w-full h-full object-cover" data-alt="A high-quality professional photograph of a female Indian software engineer. She is looking directly at the camera with a calm and capable expression. She is in a high-tech office setting with emerald-toned lighting accents in the background. The visual style is crisp, professional, and sophisticated, designed for a modern AI operational interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqxf7L-il_Xo5l6SdqGSvhGApn-Se7Jv73mXvkTMdZTbuLQhDE-M0DwGFcmcA4wB2Jp5ETQFnAQDd-dq_kkbxdyIYZHJ6Dckhg8IlLfcNkC_osAU5YIKRZC-0ErJk_3-Dq9VJMoMBvTT5DC8NIycu4cocddx_d84Wsg2rUkWmGacWwStNGrnZbm9pXs3GF_81u5yhKLDVYp2U0hwoAf70RtFK2KXK9eE0OtVB_ju49W28K_aoD4UO25poV_yIF6XulAt4FH8c4Fy_P"/>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Priya Patel</h3>
+<p class="text-code-sm font-code-sm text-on-tertiary-container">SRE Platform Engineer</p>
+</div>
+</div>
+<div class="space-y-unit">
+<div class="flex justify-between text-code-sm text-on-surface-variant">
+<span>Model Confidence</span>
+<span class="text-on-tertiary-container">92.5%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1">
+<div class="bg-on-tertiary-container h-full" style="width: 92.5%"></div>
+</div>
+<p class="mt-stack-sm text-body-md text-on-surface">224 <span class="text-on-surface-variant text-body-sm">Incidents Solved</span></p>
+</div>
+</div>
+</section>
+<!-- Center: Knowledge Graph Explorer (8 cols) -->
+<section class="lg:col-span-8 flex flex-col gap-stack-md min-h-[600px]">
+<div class="flex justify-between items-center">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant">Neural Knowledge Graph</h2>
+<div class="flex gap-stack-sm">
+<span class="flex items-center gap-2 text-code-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Expert
+                        </span>
+<span class="flex items-center gap-2 text-code-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-error"></span> Incident
+                        </span>
+<span class="flex items-center gap-2 text-code-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Service
+                        </span>
+</div>
+</div>
+<div class="flex-grow bg-surface-container-lowest border border-outline-variant relative overflow-hidden canvas-bg flex items-center justify-center">
+<!-- SVG Knowledge Graph Visualization -->
+<svg class="w-full h-full max-h-[700px] absolute inset-0 z-0 opacity-80" viewbox="0 0 800 600">
+<defs>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Connection Lines -->
+<g class="stroke-outline-variant/30 stroke-1 fill-none">
+<line x1="400" x2="250" y1="300" y2="150"></line>
+<line x1="400" x2="550" y1="300" y2="150"></line>
+<line x1="400" x2="250" y1="300" y2="450"></line>
+<line x1="400" x2="550" y1="300" y2="450"></line>
+<line x1="250" x2="100" y1="150" y2="100"></line>
+<line x1="250" x2="300" y1="150" y2="50"></line>
+<line x1="550" x2="650" y1="150" y2="100"></line>
+<line x1="550" x2="500" y1="150" y2="50"></line>
+</g>
+<!-- Nodes -->
+<!-- Central Core -->
+<g class="cursor-pointer">
+<circle class="fill-primary photonic-glow node-pulse" cx="400" cy="300" r="12"></circle>
+<text class="fill-primary font-code-sm text-[12px]" text-anchor="middle" x="400" y="330">ROOT_SYSTEM</text>
+</g>
+<!-- Level 1 Nodes -->
+<g class="cursor-pointer group">
+<circle class="fill-tertiary" cx="250" cy="150" r="8"></circle>
+<text class="fill-on-surface-variant font-code-sm text-[10px]" text-anchor="middle" x="250" y="175">Auth_Service</text>
+</g>
+<g class="cursor-pointer">
+<circle class="fill-tertiary" cx="550" cy="150" r="8"></circle>
+<text class="fill-on-surface-variant font-code-sm text-[10px]" text-anchor="middle" x="550" y="175">Kube_Master</text>
+</g>
+<g class="cursor-pointer">
+<circle class="fill-error" cx="250" cy="450" r="10"></circle>
+<text class="fill-on-surface-variant font-code-sm text-[10px]" text-anchor="middle" x="250" y="475">Latency_Spike_09</text>
+</g>
+<g class="cursor-pointer">
+<circle class="fill-secondary" cx="550" cy="450" r="8"></circle>
+<text class="fill-on-surface-variant font-code-sm text-[10px]" text-anchor="middle" x="550" y="475">Alex_Chen_Twin</text>
+</g>
+<!-- Satellite Nodes -->
+<circle class="fill-outline-variant" cx="100" cy="100" r="5"></circle>
+<circle class="fill-outline-variant" cx="300" cy="50" r="5"></circle>
+<circle class="fill-outline-variant" cx="650" cy="100" r="5"></circle>
+<circle class="fill-outline-variant" cx="500" cy="50" r="5"></circle>
+</svg>
+<!-- Graph Overlay Controls -->
+<div class="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
+<button class="bg-surface-container-high border border-outline-variant p-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface">add</span>
+</button>
+<button class="bg-surface-container-high border border-outline-variant p-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface">remove</span>
+</button>
+<button class="bg-surface-container-high border border-outline-variant p-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface">center_focus_strong</span>
+</button>
+</div>
+<!-- Search / Filter in Canvas -->
+<div class="absolute top-6 right-6 z-10">
+<div class="flex items-center gap-2 bg-surface-container/90 backdrop-blur-md border border-outline-variant px-4 py-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-on-surface-variant w-48" placeholder="Search knowledge..." type="text"/>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Side Slide-out Panel: Expert Detail -->
+<aside class="fixed right-0 top-0 h-full w-full md:w-[480px] bg-surface-container border-l border-outline-variant z-[60] translate-x-full transition-transform duration-500 ease-in-out shadow-2xl" id="detailPanel">
+<div class="h-full flex flex-col p-stack-lg overflow-y-auto">
+<!-- Header -->
+<div class="flex justify-between items-start mb-stack-lg">
+<div class="flex items-center gap-stack-md">
+<div class="w-16 h-16 rounded-full border-2 border-primary overflow-hidden" id="detailAvatar">
+<img alt="Expert" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNeBOFDkkHW65KYwPR9Pjr7Q4SROvybbgbL2fktjVvINuj10ZGVb0zboBVp0DYULvDKdRApovOhPKdAsvagIafPvLbjB-rnpJ4oZap6ppsU7Wdv_2RX4aii1QpOKLlsuaAYw0e0jS9myj0A5TB81nPxkcs5ac_AjQwckawIEYeRxnY7LTmP_saJTn4k5piMYJeoZvuS3xRDiWes0jlRdUmbxs-oqRTGYJVERsa-7ZuHWuprZD2WuW7cX_IkuHzObgZsTometVUHXsw"/>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface" id="detailName">Alex Chen</h2>
+<span class="text-code-sm font-code-sm text-primary uppercase tracking-widest" id="detailRole">INFRA ARCHITECT</span>
+</div>
+</div>
+<button class="p-2 hover:bg-surface-variant rounded-full transition-colors" onclick="closeDetail()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Stats -->
+<div class="grid grid-cols-2 gap-stack-md mb-stack-lg">
+<div class="p-stack-md bg-surface-container-low border border-outline-variant/30">
+<p class="text-code-sm text-on-surface-variant mb-1">Avg MTTR</p>
+<p class="text-headline-lg font-bold text-primary">14.2m</p>
+<p class="text-[10px] text-primary/60 font-code-sm">▼ 12% vs Manual</p>
+</div>
+<div class="p-stack-md bg-surface-container-low border border-outline-variant/30">
+<p class="text-code-sm text-on-surface-variant mb-1">Success Rate</p>
+<p class="text-headline-lg font-bold text-on-surface">99.2%</p>
+<p class="text-[10px] text-tertiary font-code-sm">Stable Performance</p>
+</div>
+</div>
+<!-- Pattern History LineChart Mock -->
+<div class="mb-stack-lg">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm">RESOLUTION VELOCITY (7D)</h3>
+<div class="w-full h-32 bg-surface-container-lowest border border-outline-variant/20 relative flex items-end p-2 gap-1">
+<!-- Simple CSS bar chart as LineChart placeholder -->
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/20 h-[35%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/20 h-[80%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/20 h-[90%] rounded-t-sm border-t border-primary"></div>
+<div class="flex-1 bg-primary/40 h-[75%] rounded-t-sm border-t border-primary shadow-[0_0_10px_rgba(76,215,246,0.3)]"></div>
+</div>
+</div>
+<!-- Investigation Patterns -->
+<div class="mb-stack-lg">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm">INVESTIGATION PATTERNS</h3>
+<ul class="space-y-stack-sm">
+<li class="flex items-start gap-stack-sm">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">check_circle</span>
+<span class="text-body-md text-on-surface">Binary Log Correlation for K8s Scheduler Events</span>
+</li>
+<li class="flex items-start gap-stack-sm">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">check_circle</span>
+<span class="text-body-md text-on-surface">Memory Pressure Signature Analysis in Go Runtimes</span>
+</li>
+<li class="flex items-start gap-stack-sm">
+<span class="material-symbols-outlined text-primary text-[18px] mt-1">check_circle</span>
+<span class="text-body-md text-on-surface">Network Partition Tracing via Envoy Sidecars</span>
+</li>
+</ul>
+</div>
+<!-- Top Expertise -->
+<div class="mb-stack-lg">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-stack-sm">EXPERTISE TOPOLOGY</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-highest text-code-sm text-on-surface border border-outline-variant">Kubernetes Core</span>
+<span class="px-3 py-1 bg-surface-container-highest text-code-sm text-on-surface border border-outline-variant">Networking L7</span>
+<span class="px-3 py-1 bg-surface-container-highest text-code-sm text-on-surface border border-outline-variant">Prometheus/M3</span>
+<span class="px-3 py-1 bg-surface-container-highest text-code-sm text-on-surface border border-outline-variant">Terraform</span>
+<span class="px-3 py-1 bg-surface-container-highest text-code-sm text-on-surface border border-outline-variant">Distributed Systems</span>
+</div>
+</div>
+<div class="mt-auto pt-stack-lg">
+<button class="w-full py-4 bg-primary text-on-primary font-bold hover:bg-secondary transition-colors photonic-glow">
+                    SYNCHRONIZE TWIN KNOWLEDGE
+                </button>
+</div>
+</div>
+</aside>
+<!-- Footer -->
+<footer class="w-full py-12 border-t border-outline-variant/20 bg-surface-container-lowest mt-section-gap">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin max-w-container-max mx-auto gap-gutter">
+<div class="font-headline-md text-headline-md font-bold text-primary">OpsTwin AI</div>
+<p class="text-on-surface-variant text-body-sm text-center md:text-left">© 2024 OpsTwin AI. All rights reserved. Built for Agentic Intelligence.</p>
+<div class="flex gap-stack-md">
+<a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary underline transition-all" href="#">Contact Support</a>
+</div>
+</div>
+</footer>
+<script>
+        function openDetail(expert) {
+            const panel = document.getElementById('detailPanel');
+            const avatar = document.querySelector('#detailAvatar img');
+            const name = document.getElementById('detailName');
+            const role = document.getElementById('detailRole');
+            
+            const experts = {
+                'alex': {
+                    name: 'Alex Chen',
+                    role: 'INFRA ARCHITECT',
+                    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256'
+                },
+                'maria': {
+                    name: 'Maria Garcia',
+                    role: 'CLOUD SECURITY LEAD',
+                    img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256'
+                },
+                'james': {
+                    name: 'James Wilson',
+                    role: 'RELIABILITY EXPERT',
+                    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=256'
+                },
+                'priya': {
+                    name: 'Priya Patel',
+                    role: 'SRE PLATFORM LEAD',
+                    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256'
+                }
+            };
+
+            const data = experts[expert];
+            name.innerText = data.name;
+            role.innerText = data.role;
+            avatar.src = data.img;
+            
+            panel.classList.remove('translate-x-full');
+        }
+
+        function closeDetail() {
+            const panel = document.getElementById('detailPanel');
+            panel.classList.add('translate-x-full');
+        }
+
+        // Escape to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDetail();
+        });
+    </script>
+</body></html>
