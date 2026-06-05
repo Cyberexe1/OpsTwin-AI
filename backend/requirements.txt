@@ -5,3 +5,13 @@ pydantic-settings==2.7.1
 httpx==0.28.1
 python-dotenv==1.0.1
 splunk-sdk==2.1.0
+langgraph==0.2.60
+langchain==0.3.14
+langchain-openai==0.2.14
+langchain-mcp-adapters==0.1.0
+openai==1.58.1
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.36
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+splunk-mcp==0.5.0

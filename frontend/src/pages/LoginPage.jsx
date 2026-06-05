@@ -1,17 +1,20 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { loginUser, DEMO_USER } from '../lib/auth'
+import { loginUser, DEMO_HINT } from '../lib/auth'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    const result = loginUser(email, password)
+    setLoading(true)
+    const result = await loginUser(email, password)
+    setLoading(false)
     if (result.success) {
       navigate('/dashboard')
     } else {
@@ -20,8 +23,8 @@ export default function LoginPage() {
   }
 
   const fillDemo = () => {
-    setEmail(DEMO_USER.email)
-    setPassword(DEMO_USER.password)
+    setEmail(DEMO_HINT.email)
+    setPassword(DEMO_HINT.password)
   }
 
   return (
@@ -66,10 +69,10 @@ export default function LoginPage() {
             </div>
             <div className="font-jetbrains text-[13px] text-on-surface-variant space-y-1">
               <div>
-                Email: <span className="text-on-surface">{DEMO_USER.email}</span>
+                Email: <span className="text-on-surface">{DEMO_HINT.email}</span>
               </div>
               <div>
-                Password: <span className="text-on-surface">{DEMO_USER.password}</span>
+                Password: <span className="text-on-surface">{DEMO_HINT.password}</span>
               </div>
             </div>
           </div>

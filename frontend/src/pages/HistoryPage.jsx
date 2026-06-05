@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getInvestigations, getInvestigation } from '../lib/api'
 
-const investigations = [
-  { id: '#INC-8812-X', service: 'auth-gateway', impact: 'Critical', impactStyle: 'bg-error-container/20 text-error border-error/30', dotColor: 'bg-error', confidence: '98.2%', status: 'Resolved', statusIcon: 'check_circle', statusColor: 'text-tertiary', duration: '12m 45s', pulse: true },
-  { id: '#INC-9004-A', service: 'db-sharding-01', impact: 'Medium', impactStyle: 'bg-tertiary-container/10 text-tertiary border-tertiary/30', dotColor: 'bg-tertiary', confidence: '74.5%', status: 'Active', statusIcon: 'sync', statusColor: 'text-on-surface-variant italic', duration: '03h 12m', spin: true },
-  { id: '#INC-7721-P', service: 'payment-svc', impact: 'High', impactStyle: 'bg-secondary-container/10 text-secondary border-secondary/30', dotColor: 'bg-secondary', confidence: '91.0%', status: 'Resolved', statusIcon: 'check_circle', statusColor: 'text-tertiary', duration: '24m 10s' },
-  { id: '#INC-6650-L', service: 'search-indexer', impact: 'Low', impactStyle: 'bg-tertiary-container/10 text-tertiary border-tertiary/30', dotColor: 'bg-tertiary', confidence: '99.9%', status: 'Resolved', statusIcon: 'check_circle', statusColor: 'text-tertiary', duration: '05m 12s' },
-  { id: '#INC-5512-B', service: 'api-ingress', impact: 'High', impactStyle: 'bg-secondary-container/10 text-secondary border-secondary/30', dotColor: 'bg-secondary', confidence: '82.3%', status: 'Resolved', statusIcon: 'check_circle', statusColor: 'text-tertiary', duration: '45m 22s' },
-]
+const severityMap = {
+  P1: { label: 'Critical', style: 'bg-error-container/20 text-error border-error/30', dotColor: 'bg-error', pulse: true },
+  P2: { label: 'High', style: 'bg-secondary-container/10 text-secondary border-secondary/30', dotColor: 'bg-secondary' },
+  P3: { label: 'Medium', style: 'bg-tertiary-container/10 text-tertiary border-tertiary/30', dotColor: 'bg-tertiary' },
+}
+
+const fallbackInvestigations = []
 
 const logLines = [
   { time: '[14:02:11]', label: 'SYS_EVENT:', labelColor: 'text-on-surface', text: '5xx Spike detected on auth-gateway. Threshold exceeded (22.5%).' },
@@ -20,6 +21,45 @@ const logLines = [
 export default function HistoryPage() {
   const [selectedRow, setSelectedRow] = useState(0)
   const [activeTab, setActiveTab] = useState('logs')
+  const [investigations, setInvestigations] = useState(fallbackInvestigations)
+  const [detail, setDetail] = useState(null)
+
+  useEffect(() => {
+    getInvestigations()
+      .then((data) => {
+        if (data.investigations && data.investigations.length > 0) {
+          const mapped = data.investigations.map((inv) => {
+            const sev = severityMap[inv.severity] || severityMap.P3
+            return {
+              id: inv.id,
+              service: inv.service,
+              impact: sev.label,
+              impactStyle: sev.style,
+              dotColor: sev.dotColor,
+              confidence: typeof inv.confidence === 'number' && inv.confidence < 1 ? `${Math.round(inv.confidence * 100)}%` : `${inv.confidence}%`,
+              status: inv.status === 'completed' ? 'Resolved' : 'Active',
+              statusIcon: inv.status === 'completed' ? 'check_circle' : 'sync',
+              statusColor: inv.status === 'completed' ? 'text-tertiary' : 'text-on-surface-variant italic',
+              duration: inv.duration || 'N/A',
+              pulse: sev.pulse,
+              spin: inv.status !== 'completed',
+            }
+          })
+          setInvestigations(mapped)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // Load detail when row changes
+  useEffect(() => {
+    const inv = investigations[selectedRow]
+    if (inv && inv.id && inv.id.startsWith('INV-')) {
+      getInvestigation(inv.id).then(setDetail).catch(() => setDetail(null))
+    } else {
+      setDetail(null)
+    }
+  }, [selectedRow, investigations])
 
   return (
     <>
@@ -31,7 +71,7 @@ export default function HistoryPage() {
           <div className="col-span-12 lg:col-span-7 flex flex-col bg-surface border border-outline-variant rounded-xl overflow-hidden">
             <div className="p-4 border-b border-outline-variant flex justify-between items-center">
               <h2 className="font-inter text-[24px] font-semibold text-on-surface leading-[1.4]">Archive Explorer</h2>
-              <span className="font-jetbrains text-[12px] tracking-[0.15em] text-on-surface-variant uppercase">2,482 total records</span>
+              <span className="font-jetbrains text-[12px] tracking-[0.15em] text-on-surface-variant uppercase">{investigations.length} records</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -96,21 +136,21 @@ export default function HistoryPage() {
                 <div>
                   <p className="font-jetbrains text-[12px] tracking-[0.15em] text-secondary uppercase mb-1">SELECTED INVESTIGATION</p>
                   <h3 className="font-inter text-[24px] font-semibold text-on-surface leading-[1.4]">
-                    {investigations[selectedRow].id}
+                    {investigations[selectedRow]?.id || 'N/A'}
                   </h3>
                 </div>
                 <span className="text-tertiary px-3 py-1 border border-tertiary/20 bg-tertiary/10 rounded-full font-jetbrains text-[10px] tracking-[0.15em] uppercase">
-                  VERIFIED SOLUTION
+                  {investigations[selectedRow]?.status === 'Resolved' ? 'VERIFIED SOLUTION' : 'IN PROGRESS'}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 bg-background border border-outline-variant rounded">
-                  <p className="font-jetbrains text-[10px] tracking-[0.15em] text-on-surface-variant uppercase">TIMELINE</p>
-                  <p className="text-on-surface font-jetbrains text-[13px] mt-1">12 Oct 14:02:11</p>
+                  <p className="font-jetbrains text-[10px] tracking-[0.15em] text-on-surface-variant uppercase">SERVICE</p>
+                  <p className="text-on-surface font-jetbrains text-[13px] mt-1">{detail?.service || investigations[selectedRow]?.service || 'N/A'}</p>
                 </div>
                 <div className="p-3 bg-background border border-outline-variant rounded">
-                  <p className="font-jetbrains text-[10px] tracking-[0.15em] text-on-surface-variant uppercase">PRIMARY AGENT</p>
-                  <p className="text-on-surface font-jetbrains text-[13px] mt-1">OpsTwin-Historian-9</p>
+                  <p className="font-jetbrains text-[10px] tracking-[0.15em] text-on-surface-variant uppercase">CONFIDENCE</p>
+                  <p className="text-on-surface font-jetbrains text-[13px] mt-1">{detail ? `${Math.round(detail.overall_confidence * 100)}%` : investigations[selectedRow]?.confidence || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -133,24 +173,45 @@ export default function HistoryPage() {
                 ))}
               </div>
               <div className="p-4 bg-background flex-1 font-jetbrains text-[13px] text-on-surface-variant custom-scrollbar overflow-y-auto leading-relaxed">
-                <div className="space-y-3">
-                  {logLines.map((line, i) => (
-                    <div key={i}>
-                      <span className="text-primary">{line.time}</span>{' '}
-                      <span className={line.labelColor}>{line.label}</span>{' '}
-                      {line.text}
+                {detail && activeTab === 'findings' ? (
+                  <div className="space-y-3">
+                    <div><span className="text-primary">[HISTORIAN]</span> {detail.agent_outputs?.historian?.reasoning || 'No findings available'}</div>
+                    {detail.agent_outputs?.historian?.recommendations?.map((rec, i) => (
+                      <div key={i} className="pl-4 border-l border-outline-variant py-1">• {rec}</div>
+                    ))}
+                  </div>
+                ) : detail && activeTab === 'expert' ? (
+                  <div className="space-y-3">
+                    <div><span className="text-purple-400">[EXPERT TWIN]</span> {detail.agent_outputs?.expert_twin?.reasoning || 'No reasoning available'}</div>
+                    {detail.agent_outputs?.expert_twin?.recommendations?.map((rec, i) => (
+                      <div key={i} className="pl-4 border-l border-purple-400/30 py-1">• {rec}</div>
+                    ))}
+                  </div>
+                ) : detail && activeTab === 'resolution' ? (
+                  <div className="space-y-3">
+                    <div><span className="text-primary">[RESOLUTION PLAN]</span> Confidence: {Math.round(detail.overall_confidence * 100)}%</div>
+                    {detail.resolution_plan?.steps?.map((step, i) => (
+                      <div key={i} className="pl-4 border-l border-primary/30 py-1">{step}</div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {logLines.map((line, i) => (
+                      <div key={i}>
+                        <span className="text-primary">{line.time}</span>{' '}
+                        <span className={line.labelColor}>{line.label}</span>{' '}
+                        {line.text}
+                      </div>
+                    ))}
+                    <div className="pl-4 border-l border-outline-variant py-2 bg-surface-container-low/30 my-2">
+                      <span className="text-tertiary">ANALYSIS:</span> Memory pressure identified in pod 'auth-v2-7f9b8'. Swapping detected. Latency increased to 450ms.
                     </div>
-                  ))}
-                  {/* Analysis block */}
-                  <div className="pl-4 border-l border-outline-variant py-2 bg-surface-container-low/30 my-2">
-                    <span className="text-tertiary">ANALYSIS:</span> Memory pressure identified in pod 'auth-v2-7f9b8'. Swapping detected. Latency increased to 450ms.
+                    <div className="flex items-center gap-2">
+                      <span className="text-primary">[14:04:30]</span>
+                      <span className="terminal-cursor"></span>
+                    </div>
                   </div>
-                  {/* Cursor */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary">[14:04:30]</span>
-                    <span className="terminal-cursor"></span>
-                  </div>
-                </div>
+                )}
               </div>
               <div className="p-4 border-t border-outline-variant bg-surface-container-low flex justify-end gap-3">
                 <button className="px-4 py-2 bg-surface-container-highest border border-outline-variant text-on-surface font-jetbrains text-[11px] tracking-[0.15em] uppercase rounded hover:bg-outline-variant transition-colors">

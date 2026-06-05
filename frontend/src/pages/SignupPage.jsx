@@ -1,16 +1,35 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { registerUser } from '../lib/auth'
 
 export default function SignupPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // TODO: integrate with backend auth
-    console.log('Signup:', { name, email, password })
+    setError('')
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+    setLoading(true)
+    const result = await registerUser(email, name, password)
+    setLoading(false)
+    if (result.success) {
+      navigate('/dashboard')
+    } else {
+      setError(result.error)
+    }
   }
 
   return (

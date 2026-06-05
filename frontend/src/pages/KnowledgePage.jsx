@@ -1,88 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { getUser } from '../lib/auth'
+import { getExperts } from '../lib/api'
 
-const experts = [
-  {
-    id: 'alex',
-    name: 'Alex Chen',
-    role: 'L8 Infrastructure Architect',
-    color: 'primary',
-    confidence: 98.4,
-    incidents: 412,
-    avatar: 'AC',
-    patterns: [
-      'Binary Log Correlation for K8s Scheduler Events',
-      'Memory Pressure Signature Analysis in Go Runtimes',
-      'Network Partition Tracing via Envoy Sidecars',
-    ],
-    expertise: ['Kubernetes Core', 'Networking L7', 'Prometheus/M3', 'Terraform', 'Distributed Systems'],
-    mttr: '14.2m',
-    mttrDelta: '▼ 12% vs Manual',
-    successRate: '99.2%',
-    successNote: 'Stable Performance',
-  },
-  {
-    id: 'maria',
-    name: 'Maria Garcia',
-    role: 'Cloud Security Lead',
-    color: 'tertiary',
-    confidence: 94.1,
-    incidents: 289,
-    avatar: 'MG',
-    patterns: [
-      'IAM Role Escalation Detection via CloudTrail',
-      'Secret Rotation Failure Root Cause Analysis',
-      'Zero-Trust Policy Enforcement Verification',
-    ],
-    expertise: ['AWS Security', 'IAM/RBAC', 'Vault', 'CloudTrail', 'Network Policies'],
-    mttr: '18.6m',
-    mttrDelta: '▼ 8% vs Manual',
-    successRate: '97.8%',
-    successNote: 'High Confidence',
-  },
-  {
-    id: 'james',
-    name: 'James Wilson',
-    role: 'Data Reliability Expert',
-    color: 'secondary',
-    confidence: 89.8,
-    incidents: 156,
-    avatar: 'JW',
-    patterns: [
-      'PostgreSQL Vacuum Deadlock Resolution',
-      'Kafka Consumer Lag Spike Investigation',
-      'Redis Memory Fragmentation Analysis',
-    ],
-    expertise: ['PostgreSQL', 'Kafka', 'Redis', 'Data Pipelines', 'CDC Streams'],
-    mttr: '22.1m',
-    mttrDelta: '▼ 6% vs Manual',
-    successRate: '95.4%',
-    successNote: 'Improving',
-  },
-  {
-    id: 'priya',
-    name: 'Priya Patel',
-    role: 'SRE Platform Engineer',
-    color: '[#00434a]',
-    confidence: 92.5,
-    incidents: 224,
-    avatar: 'PP',
-    patterns: [
-      'Disk I/O Saturation Pattern in EBS Volumes',
-      'CPU Steal Time Correlation with Noisy Neighbors',
-      'Auto-scaling Flapping Detection',
-    ],
-    expertise: ['SRE Practices', 'Disk/CPU', 'Auto-scaling', 'Incident Command', 'Chaos Engineering'],
-    mttr: '16.8m',
-    mttrDelta: '▼ 10% vs Manual',
-    successRate: '98.1%',
-    successNote: 'Stable Performance',
-  },
-]
+const fallbackExperts = []
 
 export default function KnowledgePage() {
   const user = getUser()
   const [selectedExpert, setSelectedExpert] = useState(null)
+  const [experts, setExperts] = useState(fallbackExperts)
+
+  useEffect(() => {
+    getExperts()
+      .then((data) => {
+        if (data.experts && data.experts.length > 0) {
+          setExperts(data.experts)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <div className="relative">

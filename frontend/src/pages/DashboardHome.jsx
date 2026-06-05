@@ -1,10 +1,23 @@
+import { useState, useEffect } from 'react'
+import { getAnalyticsSummary, getInvestigations, getHealth } from '../lib/api'
+
 export default function DashboardHome() {
+  const [analytics, setAnalytics] = useState(null)
+  const [investigations, setInvestigations] = useState(null)
+  const [health, setHealth] = useState(null)
+
+  useEffect(() => {
+    getAnalyticsSummary().then(setAnalytics).catch(() => {})
+    getInvestigations().then(setInvestigations).catch(() => {})
+    getHealth().then(setHealth).catch(() => {})
+  }, [])
+
   return (
     <div className="p-[24px] space-y-[24px] max-w-[1600px] mx-auto w-full">
       <PageTitle />
-      <KPICards />
-      <ChartsRow />
-      <BottomRow />
+      <KPICards analytics={analytics} />
+      <ChartsRow analytics={analytics} />
+      <BottomRow investigations={investigations} health={health} />
       <DashboardFooter />
     </div>
   )
@@ -31,13 +44,21 @@ function PageTitle() {
   )
 }
 
-function KPICards() {
+function KPICards({ analytics }) {
+  if (!analytics) return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-surface-container border border-outline-variant/30 p-6 rounded animate-pulse h-[140px]"></div>
+      ))}
+    </div>
+  )
+  const data = analytics
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
-      <KPICard label="MTTR Reduction" value="-47%" sub="↓ Improvement" icon="speed" color="primary" barWidth="47%" />
-      <KPICard label="Knowledge Preserved" value="500" sub="Artifacts" icon="memory" color="secondary" segmented />
-      <KPICard label="Expert Twins" value="4" sub="Active Agents" icon="hub" color="[#A855F7]" capacity />
-      <KPICard label="Avg Confidence" value="87%" sub="Global Score" icon="verified" color="[#F59E0B]" barWidth="87%" />
+      <KPICard label="MTTR Reduction" value={`${data.mttr_reduction}%`} sub="↓ Improvement" icon="speed" color="primary" barWidth={`${Math.abs(data.mttr_reduction)}%`} />
+      <KPICard label="Knowledge Preserved" value={String(data.knowledge_preserved)} sub="Artifacts" icon="memory" color="secondary" segmented />
+      <KPICard label="Expert Twins" value={String(data.expert_twins)} sub="Active Agents" icon="hub" color="[#A855F7]" capacity />
+      <KPICard label="Avg Confidence" value={`${data.avg_confidence}%`} sub="Global Score" icon="verified" color="[#F59E0B]" barWidth={`${data.avg_confidence}%`} />
     </div>
   )
 }
@@ -77,7 +98,15 @@ function KPICard({ label, value, sub, icon, color, barWidth, segmented, capacity
   )
 }
 
-function ChartsRow() {
+function ChartsRow({ analytics }) {
+  const agents = analytics?.agents || {}
+  const barData = [
+    { label: 'HISTORIAN', value: agents.historian?.executions || 842, color: '#4cd7f6' },
+    { label: 'EXPERT', value: agents.expert_twin?.executions || 512, color: '#A855F7' },
+    { label: 'RISK', value: agents.risk_agent?.executions || 219, color: '#F59E0B' },
+    { label: 'PLANNER', value: agents.planner?.executions || 690, color: '#21b7c7' },
+  ]
+  const maxVal = Math.max(...barData.map(b => b.value))
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-[24px]">
       {/* MTTR Trend */}
@@ -115,10 +144,9 @@ function ChartsRow() {
           <span className="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">more_horiz</span>
         </div>
         <div className="flex items-end justify-between h-[240px] px-4 gap-6">
-          <AgentBar label="HISTORIAN" height="85%" color="#4cd7f6" requests="842" />
-          <AgentBar label="EXPERT" height="60%" color="#A855F7" requests="512" />
-          <AgentBar label="RISK" height="35%" color="#F59E0B" requests="219" />
-          <AgentBar label="PLANNER" height="75%" color="#21b7c7" requests="690" />
+          {barData.map((bar) => (
+            <AgentBar key={bar.label} label={bar.label} height={`${(bar.value / maxVal) * 85}%`} color={bar.color} requests={String(bar.value)} />
+          ))}
         </div>
       </div>
     </div>
@@ -138,15 +166,12 @@ function AgentBar({ label, height, color, requests }) {
   )
 }
 
-function BottomRow() {
-  const investigations = [
-    { id: '#OT-9842', service: 'auth-gateway-v2', severity: 'P1', confidence: '94%', status: 'In Progress', statusDot: 'bg-primary', time: '2m ago' },
-    { id: '#OT-9840', service: 'payment-processor', severity: 'P2', confidence: '81%', status: 'Analyzing', statusDot: 'bg-outline', time: '14m ago' },
-    { id: '#OT-9838', service: 'redis-cache-main', severity: 'P3', confidence: '99%', status: 'Resolved', statusIcon: true, time: '1h ago' },
-    { id: '#OT-9837', service: 'kubernetes-node-04', severity: 'P2', confidence: '74%', status: 'Resolved', statusIcon: true, time: '2h ago' },
-  ]
+function BottomRow({ investigations, health }) {
+  const invData = investigations?.investigations || []
   const severityStyles = { P1: 'bg-error-container/20 text-error border-error/30', P2: 'bg-[#F59E0B]/20 text-[#F59E0B] border-[#F59E0B]/30', P3: 'bg-outline-variant/30 text-outline border-outline-variant/50' }
-  const systemHealth = ['Splunk MCP', 'Hosted Models', 'Qdrant Vector DB', 'Neo4j Graph', 'LangGraph SDK', 'PostgreSQL']
+  const systemHealth = health?.components
+    ? Object.entries(health.components).map(([name, status]) => ({ name, status }))
+    : []
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-[24px]">
@@ -165,19 +190,19 @@ function BottomRow() {
               </tr>
             </thead>
             <tbody>
-              {investigations.map((inv) => (
+              {invData.map((inv) => (
                 <tr key={inv.id} className="border-b border-outline-variant/10 hover:bg-surface-variant/20 transition-colors">
                   <td className="p-4 font-jetbrains text-[13px] text-primary">{inv.id}</td>
                   <td className="p-4 text-[16px] text-on-surface">{inv.service}</td>
-                  <td className="p-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${severityStyles[inv.severity]}`}>{inv.severity}</span></td>
-                  <td className="p-4 text-[16px] text-on-surface">{inv.confidence}</td>
+                  <td className="p-4"><span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${severityStyles[inv.severity] || severityStyles['P2']}`}>{inv.severity}</span></td>
+                  <td className="p-4 text-[16px] text-on-surface">{typeof inv.confidence === 'number' && inv.confidence < 1 ? `${Math.round(inv.confidence * 100)}%` : inv.confidence}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      {inv.statusIcon ? <span className="material-symbols-outlined text-primary text-[16px]">check_circle</span> : <span className={`w-2 h-2 rounded-full ${inv.statusDot}`}></span>}
-                      <span className="text-sm text-on-surface">{inv.status}</span>
+                      {inv.status === 'resolved' ? <span className="material-symbols-outlined text-primary text-[16px]">check_circle</span> : <span className="w-2 h-2 rounded-full bg-primary"></span>}
+                      <span className="text-sm text-on-surface capitalize">{inv.status}</span>
                     </div>
                   </td>
-                  <td className="p-4 text-outline text-sm">{inv.time}</td>
+                  <td className="p-4 text-outline text-sm">{inv.time || inv.duration || ''}</td>
                 </tr>
               ))}
             </tbody>
@@ -190,15 +215,19 @@ function BottomRow() {
           <span className="material-symbols-outlined text-primary text-[20px]">hub</span>
         </div>
         <div className="p-6 space-y-4 flex-1">
-          {systemHealth.map((service) => (
-            <div key={service} className="flex items-center justify-between p-3 bg-surface-container-low border border-outline-variant/20 rounded">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse-dot"></span>
-                <span className="text-[16px] text-on-surface">{service}</span>
+          {systemHealth.map((item) => {
+            const name = typeof item === 'string' ? item : item.name
+            const status = typeof item === 'string' ? 'online' : item.status
+            return (
+              <div key={name} className="flex items-center justify-between p-3 bg-surface-container-low border border-outline-variant/20 rounded">
+                <div className="flex items-center gap-3">
+                  <span className={`w-2 h-2 rounded-full ${status === 'online' || status === 'connected' ? 'bg-primary' : 'bg-amber-400'} animate-pulse-dot`}></span>
+                  <span className="text-[16px] text-on-surface capitalize">{name}</span>
+                </div>
+                <span className="font-jetbrains text-[11px] text-primary uppercase">{status === 'online' || status === 'connected' ? 'ONLINE' : status}</span>
               </div>
-              <span className="font-jetbrains text-[11px] text-primary">ONLINE</span>
-            </div>
-          ))}
+            )
+          })}
         </div>
         <div className="p-4 bg-primary/5 border-t border-primary/20 text-center">
           <span className="text-[11px] font-medium text-primary uppercase tracking-widest">Global Status: Operational</span>
