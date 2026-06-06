@@ -1,6 +1,6 @@
 import { getToken } from './auth'
 
-const API_BASE = ''  // Uses Vite proxy
+const API_BASE = import.meta.env.VITE_API_URL || ''  // Empty = uses Vite proxy in dev
 
 function authHeaders() {
   const token = getToken()
