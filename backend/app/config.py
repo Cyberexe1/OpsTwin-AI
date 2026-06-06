@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # App
     app_name: str = "OpsTwin AI"
     debug: bool = True
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:5174"]
+    cors_origins: list[str] = ["*"]
 
     class Config:
         env_file = ".env"
