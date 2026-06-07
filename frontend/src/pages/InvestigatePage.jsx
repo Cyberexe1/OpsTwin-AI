@@ -36,7 +36,7 @@ export default function InvestigatePage() {
             {/* Right: Pipeline + Results */}
             <section className="col-span-12 lg:col-span-8 space-y-[24px]">
               <AgentPipeline result={result} isRunning={isRunning} />
-              {result && <ResolutionPlan plan={result.resolution_plan} confidence={result.overall_confidence} />}
+              {result && <ResolutionPlan plan={result.resolution_plan} confidence={result.overall_confidence} incidentId={result.incident_id} />}
               {result && <AgentDetailCards agents={result.agent_outputs} />}
             </section>
           </div>
@@ -214,13 +214,27 @@ function AgentPipeline({ result, isRunning }) {
 }
 
 /* ===================== RESOLUTION PLAN ===================== */
-function ResolutionPlan({ plan, confidence }) {
+function ResolutionPlan({ plan, confidence, incidentId }) {
   if (!plan) return null
+
+  const [status, setStatus] = useState(null)
 
   const steps = plan.steps || []
   const riskLevel = plan.risk_level || 'medium'
   const estimatedTime = plan.estimated_time || '15-30 minutes'
   const confidencePct = Math.round((confidence || 0) * 100)
+
+  const handleApprove = () => {
+    setStatus('approved')
+  }
+
+  const handleReject = () => {
+    setStatus('rejected')
+  }
+
+  const handleModify = () => {
+    setStatus('modifying')
+  }
 
   return (
     <div className="bg-surface-container p-8 rounded-xl border border-primary/30 relative overflow-hidden">
@@ -260,18 +274,52 @@ function ResolutionPlan({ plan, confidence }) {
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-wrap gap-4">
-        <button className="bg-primary text-on-primary font-bold px-8 py-3 rounded hover:bg-secondary transition-all flex items-center gap-2">
-          <span className="material-symbols-outlined">check_circle</span>
-          Approve Plan
-        </button>
-        <button className="border border-outline-variant text-on-surface px-8 py-3 rounded hover:bg-surface-variant transition-all">
-          Modify
-        </button>
-        <button className="text-error px-4 py-3 rounded hover:bg-error/10 transition-all">
-          Reject
-        </button>
-      </div>
+      {status === 'approved' ? (
+        <div className="flex items-center gap-3 p-4 bg-primary/10 border border-primary/30 rounded-lg">
+          <span className="material-symbols-outlined text-primary">check_circle</span>
+          <div>
+            <p className="font-bold text-on-surface">Plan Approved</p>
+            <p className="text-sm text-on-surface-variant">Investigation {incidentId} — executing remediation steps.</p>
+          </div>
+        </div>
+      ) : status === 'rejected' ? (
+        <div className="flex items-center gap-3 p-4 bg-error/10 border border-error/30 rounded-lg">
+          <span className="material-symbols-outlined text-error">cancel</span>
+          <div>
+            <p className="font-bold text-on-surface">Plan Rejected</p>
+            <p className="text-sm text-on-surface-variant">Investigation requires manual review. Escalating to on-call team.</p>
+          </div>
+        </div>
+      ) : status === 'modifying' ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <span className="material-symbols-outlined text-amber-400">edit</span>
+            <p className="text-sm text-on-surface">Modify the steps above, then approve or reject.</p>
+          </div>
+          <div className="flex gap-4">
+            <button onClick={handleApprove} className="bg-primary text-on-primary font-bold px-8 py-3 rounded hover:bg-secondary transition-all flex items-center gap-2">
+              <span className="material-symbols-outlined">check_circle</span>
+              Approve Modified Plan
+            </button>
+            <button onClick={handleReject} className="text-error px-4 py-3 rounded hover:bg-error/10 transition-all">
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-4">
+          <button onClick={handleApprove} className="bg-primary text-on-primary font-bold px-8 py-3 rounded hover:bg-secondary transition-all flex items-center gap-2">
+            <span className="material-symbols-outlined">check_circle</span>
+            Approve Plan
+          </button>
+          <button onClick={handleModify} className="border border-outline-variant text-on-surface px-8 py-3 rounded hover:bg-surface-variant transition-all">
+            Modify
+          </button>
+          <button onClick={handleReject} className="text-error px-4 py-3 rounded hover:bg-error/10 transition-all">
+            Reject
+          </button>
+        </div>
+      )}
     </div>
   )
 }

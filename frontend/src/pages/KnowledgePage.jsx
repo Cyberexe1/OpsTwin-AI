@@ -66,7 +66,7 @@ export default function KnowledgePage() {
                     <span className="w-2 h-2 rounded-full bg-primary"></span> Expert
                   </span>
                   <span className="flex items-center gap-2 font-jetbrains text-[13px] text-on-surface-variant">
-                    <span className="w-2 h-2 rounded-full bg-error"></span> Incident
+                    <span className="w-2 h-2 rounded-full bg-error"></span> Root Cause
                   </span>
                   <span className="flex items-center gap-2 font-jetbrains text-[13px] text-on-surface-variant">
                     <span className="w-2 h-2 rounded-full bg-tertiary"></span> Service
@@ -75,58 +75,7 @@ export default function KnowledgePage() {
               </div>
 
               <div className="flex-grow bg-surface-container-lowest border border-outline-variant relative overflow-hidden canvas-bg flex items-center justify-center">
-                {/* SVG Graph */}
-                <svg className="w-full h-full max-h-[700px] absolute inset-0 z-0 opacity-80" viewBox="0 0 800 600">
-                  <defs>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur result="blur" stdDeviation="3" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                  </defs>
-                  {/* Connection Lines */}
-                  <g className="stroke-outline-variant/30" strokeWidth="1" fill="none">
-                    <line x1="400" y1="300" x2="250" y2="150" />
-                    <line x1="400" y1="300" x2="550" y2="150" />
-                    <line x1="400" y1="300" x2="250" y2="450" />
-                    <line x1="400" y1="300" x2="550" y2="450" />
-                    <line x1="250" y1="150" x2="100" y2="100" />
-                    <line x1="250" y1="150" x2="300" y2="50" />
-                    <line x1="550" y1="150" x2="650" y2="100" />
-                    <line x1="550" y1="150" x2="500" y2="50" />
-                    <line x1="250" y1="450" x2="150" y2="520" />
-                    <line x1="550" y1="450" x2="650" y2="520" />
-                  </g>
-                  {/* Central Core */}
-                  <g className="cursor-pointer">
-                    <circle cx="400" cy="300" r="14" className="fill-primary node-pulse" filter="url(#glow)" />
-                    <circle cx="400" cy="300" r="6" className="fill-primary" />
-                    <text x="400" y="330" textAnchor="middle" className="fill-primary font-jetbrains text-[12px]">ROOT_SYSTEM</text>
-                  </g>
-                  {/* Level 1 Nodes */}
-                  <g className="cursor-pointer">
-                    <circle cx="250" cy="150" r="8" className="fill-tertiary" />
-                    <text x="250" y="175" textAnchor="middle" className="fill-on-surface-variant text-[10px] font-jetbrains">Auth_Service</text>
-                  </g>
-                  <g className="cursor-pointer">
-                    <circle cx="550" cy="150" r="8" className="fill-tertiary" />
-                    <text x="550" y="175" textAnchor="middle" className="fill-on-surface-variant text-[10px] font-jetbrains">Kube_Master</text>
-                  </g>
-                  <g className="cursor-pointer">
-                    <circle cx="250" cy="450" r="10" className="fill-error" />
-                    <text x="250" y="475" textAnchor="middle" className="fill-on-surface-variant text-[10px] font-jetbrains">Latency_Spike_09</text>
-                  </g>
-                  <g className="cursor-pointer">
-                    <circle cx="550" cy="450" r="8" className="fill-secondary" />
-                    <text x="550" y="475" textAnchor="middle" className="fill-on-surface-variant text-[10px] font-jetbrains">Alex_Chen_Twin</text>
-                  </g>
-                  {/* Satellite Nodes */}
-                  <circle cx="100" cy="100" r="5" className="fill-outline-variant" />
-                  <circle cx="300" cy="50" r="5" className="fill-outline-variant" />
-                  <circle cx="650" cy="100" r="5" className="fill-outline-variant" />
-                  <circle cx="500" cy="50" r="5" className="fill-outline-variant" />
-                  <circle cx="150" cy="520" r="5" className="fill-outline-variant" />
-                  <circle cx="650" cy="520" r="5" className="fill-outline-variant" />
-                </svg>
+                <KnowledgeGraph experts={experts} selectedExpert={selectedExpert} onSelectExpert={setSelectedExpert} />
 
                 {/* Graph Controls */}
                 <div className="absolute bottom-6 left-6 flex flex-col gap-2 z-10">
@@ -141,15 +90,12 @@ export default function KnowledgePage() {
                   </button>
                 </div>
 
-                {/* Search in Canvas */}
+                {/* Info Panel */}
                 <div className="absolute top-6 right-6 z-10">
-                  <div className="flex items-center gap-2 bg-surface-container/90 backdrop-blur-md border border-outline-variant px-4 py-2">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
-                    <input
-                      className="bg-transparent border-none focus:ring-0 focus:outline-none text-[16px] text-on-surface placeholder:text-on-surface-variant w-48"
-                      placeholder="Search knowledge..."
-                      type="text"
-                    />
+                  <div className="bg-surface-container/90 backdrop-blur-md border border-outline-variant px-4 py-3 text-[12px] font-jetbrains text-on-surface-variant space-y-1">
+                    <div>Nodes: <span className="text-on-surface">{experts.length + 8 + 5}</span></div>
+                    <div>Edges: <span className="text-on-surface">{experts.length * 4}</span></div>
+                    <div>Status: <span className="text-primary">Live</span></div>
                   </div>
                 </div>
               </div>
@@ -161,6 +107,130 @@ export default function KnowledgePage() {
 
       <DetailPanel expert={selectedExpert} onClose={() => setSelectedExpert(null)} />
     </div>
+  )
+}
+
+/* ===================== KNOWLEDGE GRAPH ===================== */
+function KnowledgeGraph({ experts, selectedExpert, onSelectExpert }) {
+  // Services derived from expert data
+  const services = [...new Set(experts.flatMap(e => e.expertise || []).slice(0, 8))]
+  const rootCauses = ['memory_leak', 'connection_pool', 'cpu_spike', 'disk_full', 'cert_expiry']
+
+  // Expert positions (arranged in a circle around center)
+  const centerX = 400, centerY = 300
+  const expertPositions = experts.map((_, i) => {
+    const angle = (i / experts.length) * 2 * Math.PI - Math.PI / 2
+    const radius = 160
+    return { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius }
+  })
+
+  // Service positions (outer ring)
+  const servicePositions = services.slice(0, 6).map((_, i) => {
+    const angle = (i / 6) * 2 * Math.PI - Math.PI / 4
+    const radius = 260
+    return { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius }
+  })
+
+  // Root cause positions (small outer nodes)
+  const causePositions = rootCauses.map((_, i) => {
+    const angle = (i / rootCauses.length) * 2 * Math.PI + Math.PI / 6
+    const radius = 220
+    return { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius }
+  })
+
+  return (
+    <svg className="w-full h-full max-h-[700px] absolute inset-0 z-0" viewBox="0 0 800 600">
+      <defs>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur result="blur" stdDeviation="3" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      {/* Connection lines: center → experts */}
+      {expertPositions.map((pos, i) => (
+        <line key={`ce-${i}`} x1={centerX} y1={centerY} x2={pos.x} y2={pos.y}
+          stroke={selectedExpert?.id === experts[i]?.id ? '#4cd7f6' : '#3d494c'}
+          strokeWidth={selectedExpert?.id === experts[i]?.id ? 2 : 0.5}
+          opacity={0.6}
+        />
+      ))}
+
+      {/* Connection lines: experts → services */}
+      {expertPositions.map((ePos, ei) => (
+        servicePositions.slice(0, 2).map((sPos, si) => (
+          <line key={`es-${ei}-${si}`} x1={ePos.x} y1={ePos.y} x2={sPos.x} y2={sPos.y}
+            stroke="#3d494c" strokeWidth="0.3" opacity="0.4"
+          />
+        ))
+      ))}
+
+      {/* Connection lines: experts → root causes */}
+      {expertPositions.map((ePos, ei) => (
+        causePositions.slice(ei, ei + 2).map((cPos, ci) => (
+          <line key={`ec-${ei}-${ci}`} x1={ePos.x} y1={ePos.y} x2={cPos.x} y2={cPos.y}
+            stroke="#3d494c" strokeWidth="0.3" opacity="0.3"
+          />
+        ))
+      ))}
+
+      {/* Central node */}
+      <g className="cursor-pointer">
+        <circle cx={centerX} cy={centerY} r={18} className="fill-primary node-pulse" filter="url(#glow)" opacity="0.3" />
+        <circle cx={centerX} cy={centerY} r={10} fill="#4cd7f6" />
+        <text x={centerX} y={centerY + 30} textAnchor="middle" fill="#4cd7f6" fontSize="11" fontFamily="JetBrains Mono">
+          OPSTWIN_CORE
+        </text>
+      </g>
+
+      {/* Expert nodes (dynamic from data) */}
+      {experts.map((expert, i) => {
+        const pos = expertPositions[i]
+        if (!pos) return null
+        const isSelected = selectedExpert?.id === expert.id
+        const radius = 8 + (expert.incidents || 100) / 80
+        return (
+          <g key={expert.id} className="cursor-pointer" onClick={() => onSelectExpert(expert)}>
+            <circle cx={pos.x} cy={pos.y} r={radius + 4} fill={isSelected ? '#4cd7f6' : 'transparent'} opacity="0.2" />
+            <circle cx={pos.x} cy={pos.y} r={radius} fill={isSelected ? '#4cd7f6' : '#06b6d4'} opacity={isSelected ? 1 : 0.8} />
+            <text x={pos.x} y={pos.y + radius + 14} textAnchor="middle" fill="#eae1da" fontSize="10" fontFamily="JetBrains Mono">
+              {expert.name?.split(' ')[0] || expert.id}
+            </text>
+            <text x={pos.x} y={pos.y + radius + 26} textAnchor="middle" fill="#bcc9cd" fontSize="8" fontFamily="JetBrains Mono">
+              {expert.incidents || '?'} incidents
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Service nodes */}
+      {services.slice(0, 6).map((svc, i) => {
+        const pos = servicePositions[i]
+        if (!pos) return null
+        return (
+          <g key={`svc-${i}`}>
+            <circle cx={pos.x} cy={pos.y} r={6} fill="#54d8e8" opacity="0.7" />
+            <text x={pos.x} y={pos.y + 16} textAnchor="middle" fill="#bcc9cd" fontSize="8" fontFamily="JetBrains Mono">
+              {svc.length > 12 ? svc.slice(0, 12) + '..' : svc}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Root cause nodes */}
+      {rootCauses.map((cause, i) => {
+        const pos = causePositions[i]
+        if (!pos) return null
+        return (
+          <g key={`rc-${i}`}>
+            <circle cx={pos.x} cy={pos.y} r={5} fill="#ffb4ab" opacity="0.6" />
+            <text x={pos.x} y={pos.y + 14} textAnchor="middle" fill="#bcc9cd" fontSize="7" fontFamily="JetBrains Mono">
+              {cause.replace('_', ' ')}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
   )
 }
 
@@ -248,13 +318,13 @@ function DetailPanel({ expert, onClose }) {
         <div className="grid grid-cols-2 gap-[16px] mb-[32px]">
           <div className="p-[16px] bg-surface-container-low border border-outline-variant/30">
             <p className="font-jetbrains text-[13px] text-on-surface-variant mb-1">Avg MTTR</p>
-            <p className="text-[32px] font-bold text-primary leading-tight">{expert.mttr}</p>
-            <p className="text-[10px] text-primary/60 font-jetbrains">{expert.mttrDelta}</p>
+            <p className="text-[32px] font-bold text-primary leading-tight">{expert.mttr || expert.avg_mttr || '—'}</p>
+            <p className="text-[10px] text-primary/60 font-jetbrains">{expert.mttrDelta || ''}</p>
           </div>
           <div className="p-[16px] bg-surface-container-low border border-outline-variant/30">
-            <p className="font-jetbrains text-[13px] text-on-surface-variant mb-1">Success Rate</p>
-            <p className="text-[32px] font-bold text-on-surface leading-tight">{expert.successRate}</p>
-            <p className="text-[10px] text-tertiary font-jetbrains">{expert.successNote}</p>
+            <p className="font-jetbrains text-[13px] text-on-surface-variant mb-1">Incidents</p>
+            <p className="text-[32px] font-bold text-on-surface leading-tight">{expert.incidents || '—'}</p>
+            <p className="text-[10px] text-tertiary font-jetbrains">{expert.successNote || 'resolved'}</p>
           </div>
         </div>
 
@@ -282,12 +352,15 @@ function DetailPanel({ expert, onClose }) {
             INVESTIGATION PATTERNS
           </h3>
           <ul className="space-y-[8px]">
-            {expert.patterns.map((pattern) => (
-              <li key={pattern} className="flex items-start gap-[8px]">
+            {(expert.patterns || []).map((pattern, i) => (
+              <li key={i} className="flex items-start gap-[8px]">
                 <span className="material-symbols-outlined text-primary text-[18px] mt-1">check_circle</span>
                 <span className="text-[16px] text-on-surface">{pattern}</span>
               </li>
             ))}
+            {(!expert.patterns || expert.patterns.length === 0) && (
+              <li className="text-on-surface-variant text-[14px]">Investigation patterns are being learned from Splunk data...</li>
+            )}
           </ul>
         </div>
 
@@ -297,14 +370,17 @@ function DetailPanel({ expert, onClose }) {
             EXPERTISE TOPOLOGY
           </h3>
           <div className="flex flex-wrap gap-2">
-            {expert.expertise.map((tag) => (
+            {(expert.expertise || []).map((tag, i) => (
               <span
-                key={tag}
+                key={i}
                 className="px-3 py-1 bg-surface-container-highest font-jetbrains text-[13px] text-on-surface border border-outline-variant"
               >
                 {tag}
               </span>
             ))}
+            {(!expert.expertise || expert.expertise.length === 0) && (
+              <span className="text-on-surface-variant text-[14px]">Expertise domains loading...</span>
+            )}
           </div>
         </div>
 
