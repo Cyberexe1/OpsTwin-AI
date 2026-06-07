@@ -7,6 +7,7 @@ const navItems = [
   { id: 'knowledge', icon: 'menu_book', label: 'Knowledge', href: '/dashboard/knowledge' },
   { id: 'analytics', icon: 'analytics', label: 'Analytics', href: '/dashboard/analytics' },
   { id: 'history', icon: 'history', label: 'History', href: '/dashboard/history' },
+  { id: 'settings', icon: 'settings', label: 'Settings', href: '/dashboard/settings' },
 ]
 
 export default function DashboardSidebar() {
@@ -59,11 +60,6 @@ export default function DashboardSidebar() {
           className="w-full py-3 bg-primary/10 text-primary border border-primary/30 rounded mb-4 hover:bg-primary/20 transition-all font-bold text-sm"
         >
           NEW INVESTIGATION
-        </button>
-
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant/50 transition-all duration-200 mb-4">
-          <span className="material-symbols-outlined">settings</span>
-          <span className="text-[16px]">Settings</span>
         </button>
 
         <div className="p-3 bg-surface-container rounded border border-outline-variant/30">

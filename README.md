@@ -4,6 +4,10 @@
 
 **Track:** Observability | **Hackathon:** Splunk Agentic Ops 2025
 
+### 🔗 Live Demo: [https://ops-twin-ai.vercel.app](https://ops-twin-ai.vercel.app)
+
+**Login:** `demo@opstwin.ai` / `demo1234`
+
 ---
 
 ## The Problem
@@ -165,6 +169,51 @@ npm run dev
 - **Backend API:** http://localhost:8001/docs
 - **Splunk:** http://localhost:8000
 - **Demo login:** `demo@opstwin.ai` / `demo1234`
+
+---
+
+## Deployment (Production)
+
+The application is deployed across three services:
+
+| Component | Platform | URL |
+|-----------|----------|-----|
+| Frontend | Vercel (free) | https://ops-twin-ai.vercel.app |
+| Backend + Splunk | AWS EC2 `t3.large` | `44.222.62.149:8001` |
+| Database | Neon PostgreSQL (free) | Cloud-hosted |
+
+### Architecture
+
+```
+Vercel (HTTPS)                     AWS EC2 t3.large
+┌──────────────────┐               ┌──────────────────────────┐
+│ React Frontend   │──rewrites──▶ │ FastAPI Backend (:8001)   │
+│ ops-twin-ai      │               │ Splunk Enterprise (:8000) │
+│ .vercel.app      │               │ Splunk HEC (:8088)        │
+└──────────────────┘               └──────────────────────────┘
+                                              │
+                                   Neon PostgreSQL (cloud)
+                                   Groq LLM API (cloud)
+```
+
+### How It's Deployed
+
+**Frontend (Vercel):**
+- Auto-deploys from GitHub on push
+- Uses `vercel.json` rewrites to proxy `/api/*` requests to EC2 backend
+- Solves HTTPS → HTTP mixed content issue without needing SSL on EC2
+
+**Backend + Splunk (AWS EC2):**
+- Ubuntu 22.04, `t3.large` (2 vCPU, 8GB RAM)
+- Splunk Enterprise 9.3.1 with Developer License
+- FastAPI running as systemd service (`opstwin.service`)
+- 500 realistic incidents pre-loaded via HEC
+- Security group allows ports: 22, 80, 443, 8000, 8001, 8088
+
+**Database (Neon):**
+- PostgreSQL with `users` and `investigations` tables
+- Demo user pre-seeded
+- All investigation results persisted automatically
 
 ---
 

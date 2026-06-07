@@ -5,14 +5,18 @@ export default function InvestigatePage() {
   const [isRunning, setIsRunning] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [elapsed, setElapsed] = useState(null)
 
   const handleTrigger = async (formData) => {
     setIsRunning(true)
     setError('')
     setResult(null)
+    setElapsed(null)
+    const startTime = Date.now()
     try {
       const response = await startInvestigation(formData)
       setResult(response)
+      setElapsed(((Date.now() - startTime) / 1000).toFixed(1))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -26,7 +30,7 @@ export default function InvestigatePage() {
             {/* Left: Form */}
             <section className="col-span-12 lg:col-span-4 space-y-[24px]">
               <InvestigationForm onTrigger={handleTrigger} isRunning={isRunning} />
-              <SessionStatus result={result} isRunning={isRunning} />
+              <SessionStatus result={result} isRunning={isRunning} elapsed={elapsed} />
               {error && (
                 <div className="p-4 bg-error-container/20 border border-error/30 rounded-lg text-error text-sm">
                   {error}
@@ -147,7 +151,7 @@ function InvestigationForm({ onTrigger, isRunning }) {
 }
 
 /* ===================== SESSION STATUS ===================== */
-function SessionStatus({ result, isRunning }) {
+function SessionStatus({ result, isRunning, elapsed }) {
   return (
     <div className="bg-surface-container-high p-4 rounded-lg border border-outline-variant/30 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -158,9 +162,11 @@ function SessionStatus({ result, isRunning }) {
         </div>
       </div>
       <div className="text-right">
-        <p className="text-xs font-jetbrains tracking-[0.15em] text-on-surface-variant uppercase">STATUS</p>
+        <p className="text-xs font-jetbrains tracking-[0.15em] text-on-surface-variant uppercase">
+          {elapsed ? 'COMPLETED IN' : 'STATUS'}
+        </p>
         <p className={`font-jetbrains text-[13px] ${isRunning ? 'text-amber-400' : result ? 'text-primary' : 'text-on-surface-variant'}`}>
-          {isRunning ? 'Running...' : result?.status || 'Idle'}
+          {isRunning ? 'Running...' : elapsed ? `${elapsed}s` : result?.status || 'Idle'}
         </p>
       </div>
     </div>

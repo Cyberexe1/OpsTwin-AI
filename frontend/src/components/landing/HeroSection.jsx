@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const terminalData = [
   { text: '$ opstwin investigate alert_id=392-B', color: 'text-on-surface' },
@@ -90,12 +91,12 @@ export default function HeroSection() {
 
         {/* Buttons */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-20">
-          <button className="w-full md:w-auto px-8 py-4 bg-primary-container text-on-primary-container font-bold text-lg hover:scale-105 transition-transform cyan-glow">
+          <Link to="/signup" className="w-full md:w-auto px-8 py-4 bg-primary-container text-on-primary-container font-bold text-lg hover:scale-105 transition-transform cyan-glow text-center">
             Start Investigation
-          </button>
-          <button className="w-full md:w-auto px-8 py-4 border border-outline-variant text-on-surface font-bold text-lg hover:bg-surface-container transition-colors">
+          </Link>
+          <a href="#architecture" className="w-full md:w-auto px-8 py-4 border border-outline-variant text-on-surface font-bold text-lg hover:bg-surface-container transition-colors text-center">
             Watch Demo
-          </button>
+          </a>
         </div>
 
         {/* Terminal */}

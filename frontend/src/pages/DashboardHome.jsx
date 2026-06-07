@@ -35,10 +35,10 @@ function PageTitle() {
           <span className="material-symbols-outlined text-[18px]">calendar_today</span>
           <span className="font-jetbrains text-[14px] font-medium tracking-[0.15em] uppercase">Last 24 Hours</span>
         </button>
-        <button className="px-6 py-2 bg-primary text-background font-bold hover:bg-secondary flex items-center gap-2 transition-all glow-cyan">
+        <a href="/dashboard/investigate" className="px-6 py-2 bg-primary text-background font-bold hover:bg-secondary flex items-center gap-2 transition-all glow-cyan no-underline">
           <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
           <span className="font-jetbrains text-[14px] font-medium tracking-[0.15em] uppercase">New Investigation</span>
-        </button>
+        </a>
       </div>
     </div>
   )

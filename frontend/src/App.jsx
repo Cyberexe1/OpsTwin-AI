@@ -8,6 +8,7 @@ import AnalyticsPage from './pages/AnalyticsPage'
 import KnowledgePage from './pages/KnowledgePage'
 import HistoryPage from './pages/HistoryPage'
 import InvestigatePage from './pages/InvestigatePage'
+import SettingsPage from './pages/SettingsPage'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="knowledge" element={<KnowledgePage />} />
           <Route path="history" element={<HistoryPage />} />
           <Route path="investigate" element={<InvestigatePage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </div>
