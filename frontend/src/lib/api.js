@@ -61,23 +61,6 @@ export async function getHealth() {
 }
 
 export async function getRootCauses() {
-  const resp = await fetch(`${API_BASE}/api/v1/analytics/root-causes`, {
-    headers: authHeaders(),
-  })
-  if (!resp.ok) throw new Error(`API error: ${resp.status}`)
-  return resp.json()
-}
-
-export async function getServiceHeatmap() {
-  const resp = await fetch(`${API_BASE}/api/v1/analytics/service-heatmap`, {
-    headers: authHeaders(),
-  })
-  if (!resp.ok) throw new Error(`API error: ${resp.status}`)
-  return resp.json()
-}
-
-export async function getRootCauses() {
-  // Returns from analytics summary — no separate endpoint needed
   const resp = await fetch(`${API_BASE}/api/v1/analytics/summary`, {
     headers: authHeaders(),
   })
@@ -86,7 +69,6 @@ export async function getRootCauses() {
 }
 
 export async function getServiceHeatmap() {
-  // Returns from analytics summary
   const resp = await fetch(`${API_BASE}/api/v1/analytics/summary`, {
     headers: authHeaders(),
   })
