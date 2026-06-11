@@ -75,3 +75,21 @@ export async function getServiceHeatmap() {
   if (!resp.ok) throw new Error(`API error: ${resp.status}`)
   return resp.json()
 }
+
+export async function getRootCauses() {
+  // Returns from analytics summary — no separate endpoint needed
+  const resp = await fetch(`${API_BASE}/api/v1/analytics/summary`, {
+    headers: authHeaders(),
+  })
+  if (!resp.ok) return null
+  return resp.json()
+}
+
+export async function getServiceHeatmap() {
+  // Returns from analytics summary
+  const resp = await fetch(`${API_BASE}/api/v1/analytics/summary`, {
+    headers: authHeaders(),
+  })
+  if (!resp.ok) return null
+  return resp.json()
+}

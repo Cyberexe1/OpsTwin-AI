@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { getAnalyticsSummary, getInvestigations, getHealth } from '../lib/api'
 
 export default function DashboardHome() {
@@ -38,8 +39,7 @@ function PageTitle() {
         <a href="/dashboard/investigate" className="px-6 py-2 bg-primary text-background font-bold hover:bg-secondary flex items-center gap-2 transition-all glow-cyan no-underline">
           <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
           <span className="font-jetbrains text-[14px] font-medium tracking-[0.15em] uppercase">New Investigation</span>
-        </a>
-      </div>
+        </a>      </div>
     </div>
   )
 }
@@ -178,7 +178,7 @@ function BottomRow({ investigations, health }) {
       <div className="xl:col-span-2 bg-surface-container border border-outline-variant/30 rounded flex flex-col">
         <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center">
           <h3 className="font-inter text-[24px] font-semibold text-on-surface leading-[1.4]">Recent Investigations</h3>
-          <a className="text-primary text-sm font-medium hover:underline" href="/dashboard/history">View All History</a>
+          <Link to="/dashboard/history" className="text-primary text-sm font-medium hover:underline">View All History</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">

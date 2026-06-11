@@ -384,7 +384,7 @@ function ServiceHeatmap({ data }) {
                     <td key={i} className="p-1">
                       <div
                         className="h-6 w-full"
-                        style={{ backgroundColor: `rgba(76, 215, 246, ${(intensity * (0.3 + Math.random() * 0.7)).toFixed(2)})` }}
+                        style={{ backgroundColor: `rgba(76, 215, 246, ${(intensity).toFixed(2)})` }}
                       ></div>
                     </td>
                   ))}
