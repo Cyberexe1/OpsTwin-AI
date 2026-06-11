@@ -41,9 +41,16 @@ export default function InvestigatePage() {
             <section className="col-span-12 lg:col-span-8 space-y-[24px]">
               <AgentPipeline result={result} isRunning={isRunning} />
               {result && <ResolutionPlan plan={result.resolution_plan} confidence={result.overall_confidence} incidentId={result.incident_id} />}
-              {result && <AgentDetailCards agents={result.agent_outputs} />}
             </section>
           </div>
+
+      {/* Agent Detail Cards — full width below the grid */}
+      {result && (
+        <div className="max-w-[1600px] mx-auto mt-[24px]">
+          <AgentDetailCards agents={result.agent_outputs} />
+        </div>
+      )}
+
         <InvestigateFooter />
     </div>
   )
@@ -341,64 +348,62 @@ function AgentDetailCards({ agents }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Historian */}
-      <div className="bg-surface-container-high p-5 rounded-lg border border-outline-variant/20">
+      <div className="bg-surface-container-high p-6 rounded-lg border border-outline-variant/20">
         <div className="flex items-center gap-2 text-blue-400 mb-4">
-          <span className="material-symbols-outlined text-sm">history</span>
-          <span className="font-jetbrains text-[11px] tracking-[0.15em] uppercase">HISTORIAN ({Math.round((historian?.confidence || 0) * 100)}%)</span>
+          <span className="material-symbols-outlined">history</span>
+          <span className="font-jetbrains text-[13px] tracking-[0.15em] uppercase font-bold">HISTORIAN ({Math.round((historian?.confidence || 0) * 100)}%)</span>
         </div>
-        <p className="text-xs text-on-surface-variant leading-relaxed mb-3">
+        <p className="text-[14px] text-on-surface-variant leading-relaxed mb-3">
           {historian?.findings?.summary || historian?.reasoning || 'Searching operational memory...'}
         </p>
         {historian?.recommendations?.slice(0, 2).map((rec, i) => (
-          <p key={i} className="text-[10px] text-on-surface-variant mt-1">• {rec}</p>
+          <p key={i} className="text-[13px] text-on-surface-variant mt-2">• {rec}</p>
         ))}
       </div>
 
       {/* Expert Twin */}
-      <div className="bg-surface-container-high p-5 rounded-lg border border-outline-variant/20">
+      <div className="bg-surface-container-high p-6 rounded-lg border border-outline-variant/20">
         <div className="flex items-center gap-2 text-purple-400 mb-4">
-          <span className="material-symbols-outlined text-sm">psychology</span>
-          <span className="font-jetbrains text-[11px] tracking-[0.15em] uppercase">EXPERT ({Math.round((expert?.confidence || 0) * 100)}%)</span>
+          <span className="material-symbols-outlined">psychology</span>
+          <span className="font-jetbrains text-[13px] tracking-[0.15em] uppercase font-bold">EXPERT ({Math.round((expert?.confidence || 0) * 100)}%)</span>
         </div>
         <div className="space-y-2">
           {expert?.recommendations?.slice(0, 4).map((rec, i) => (
-            <div key={i} className="flex items-center gap-2 text-[10px] text-on-surface-variant">
-              <span className="w-1 h-1 bg-purple-500 rounded-full shrink-0"></span>
+            <div key={i} className="flex items-start gap-2 text-[13px] text-on-surface-variant">
+              <span className="w-1.5 h-1.5 bg-purple-500 rounded-full shrink-0 mt-1.5"></span>
               {rec}
             </div>
           ))}
           {!expert?.recommendations?.length && (
-            <p className="text-xs text-on-surface-variant">{expert?.reasoning || 'Simulating expert...'}</p>
+            <p className="text-[14px] text-on-surface-variant">{expert?.reasoning || 'Simulating expert...'}</p>
           )}
         </div>
       </div>
 
       {/* Risk Assessment */}
-      <div className="bg-surface-container-high p-5 rounded-lg border border-outline-variant/20">
+      <div className="bg-surface-container-high p-6 rounded-lg border border-outline-variant/20">
         <div className="flex items-center gap-2 text-amber-400 mb-4">
-          <span className="material-symbols-outlined text-sm">lan</span>
-          <span className="font-jetbrains text-[11px] tracking-[0.15em] uppercase">RISK ({Math.round((risk?.confidence || 0) * 100)}%)</span>
+          <span className="material-symbols-outlined">lan</span>
+          <span className="font-jetbrains text-[13px] tracking-[0.15em] uppercase font-bold">RISK ({Math.round((risk?.confidence || 0) * 100)}%)</span>
         </div>
         {risk?.findings?.blast_radius ? (
-          <ul className="text-xs space-y-2">
-            <li className="flex justify-between border-b border-outline-variant/10 pb-1">
-              <span className="text-on-surface">Blast Radius</span>
-              <span className={`${risk.findings.blast_radius.risk_level === 'high' ? 'text-error' : 'text-amber-500'}`}>
+          <ul className="text-[14px] space-y-3">
+            <li className="flex justify-between border-b border-outline-variant/10 pb-2">
+              <span className="text-on-surface font-medium">Blast Radius</span>
+              <span className={`font-bold ${risk.findings.blast_radius.risk_level === 'high' ? 'text-error' : 'text-amber-500'}`}>
                 {risk.findings.blast_radius.affected_count} services
               </span>
             </li>
-            <li className="flex justify-between border-b border-outline-variant/10 pb-1">
-              <span className="text-on-surface">Risk Level</span>
-              <span className="text-amber-500 uppercase">{risk.findings.blast_radius.risk_level}</span>
+            <li className="flex justify-between border-b border-outline-variant/10 pb-2">
+              <span className="text-on-surface font-medium">Risk Level</span>
+              <span className="text-amber-500 uppercase font-bold">{risk.findings.blast_radius.risk_level}</span>
             </li>
             {risk.findings.blast_radius.services?.slice(0, 3).map((svc, i) => (
-              <li key={i} className="flex justify-between">
-                <span className="text-on-surface-variant">{svc}</span>
-              </li>
+              <li key={i} className="text-on-surface-variant">• {svc}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-xs text-on-surface-variant">{risk?.reasoning || 'Evaluating risk...'}</p>
+          <p className="text-[14px] text-on-surface-variant">{risk?.reasoning || 'Evaluating risk...'}</p>
         )}
       </div>
     </div>
