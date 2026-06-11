@@ -53,9 +53,6 @@ export default function InvestigatePage() {
         <InvestigateFooter />
     </div>
   )
-}        <InvestigateFooter />
-    </div>
-  )
 }
 
 /* ===================== FORM ===================== */
