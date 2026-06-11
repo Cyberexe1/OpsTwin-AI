@@ -42,16 +42,18 @@ export default function InvestigatePage() {
               <AgentPipeline result={result} isRunning={isRunning} />
               {result && <ResolutionPlan plan={result.resolution_plan} confidence={result.overall_confidence} incidentId={result.incident_id} />}
             </section>
+
+            {/* Agent Detail Cards — span all 12 columns */}
+            {result && (
+              <section className="col-span-12 mt-2">
+                <AgentDetailCards agents={result.agent_outputs} />
+              </section>
+            )}
           </div>
-
-      {/* Agent Detail Cards — full width below the grid */}
-      {result && (
-        <div className="max-w-[1600px] mx-auto mt-[24px]">
-          <AgentDetailCards agents={result.agent_outputs} />
-        </div>
-      )}
-
         <InvestigateFooter />
+    </div>
+  )
+}        <InvestigateFooter />
     </div>
   )
 }
